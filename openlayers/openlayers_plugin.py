@@ -201,7 +201,7 @@ class OpenlayersPlugin:
 
   def removeLayer(self, layerId):
     layerToRemove = None
-    if self.layer != None and self.layer.getLayerID() == layerId:
+    if self.layer != None and self.layer.id() == layerId:
       self.layer = None
       # TODO: switch to next available OpenLayers layer?
 
