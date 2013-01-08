@@ -190,7 +190,7 @@ class OpenlayersPlugin:
     layer.setLayerName(layerType.name)
     layer.setLayerType(layerType)
     if layer.isValid():
-      QgsMapLayerRegistry.instance().addMapLayer(layer)
+      QgsMapLayerRegistry.instance().addMapLayers([layer])
 
       # last added layer is new reference
       self.setReferenceLayer(layer)
@@ -208,7 +208,7 @@ class OpenlayersPlugin:
   def __setCoordRSGoogle(self):
     idEpsgRSGoogle = 3857
     self.__coordRSGoogle = QgsCoordinateReferenceSystem()
-    if not self.__coordRSGoogle.createFromEpsg(idEpsgRSGoogle):
+    if not self.__coordRSGoogle.createFromId(idEpsgRSGoogle, QgsCoordinateReferenceSystem.EpsgCrsId):
       google_proj_def = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 "
       google_proj_def += "+units=m +nadgrids=@null +wktext +no_defs"
       isOk = self.__coordRSGoogle.createFromProj4(google_proj_def)
@@ -223,12 +223,12 @@ class OpenlayersPlugin:
     mapCanvas = self.iface.mapCanvas()
     # On the fly
     mapCanvas.mapRenderer().setProjectionsEnabled(True) 
-    theCoodRS = mapCanvas.mapRenderer().destinationSrs()
+    theCoodRS = mapCanvas.mapRenderer().destinationCrs()
     if theCoodRS != self.__coordRSGoogle:
       coodTrans = QgsCoordinateTransform(theCoodRS, self.__coordRSGoogle)
       extMap = mapCanvas.extent()
       extMap = coodTrans.transform(extMap, QgsCoordinateTransform.ForwardTransform)
-      mapCanvas.mapRenderer().setDestinationSrs(self.__coordRSGoogle)
+      mapCanvas.mapRenderer().setDestinationCrs(self.__coordRSGoogle)
       mapCanvas.freeze(False)
       mapCanvas.setMapUnits(self.__coordRSGoogle.mapUnits())
       mapCanvas.setExtent(extMap)
